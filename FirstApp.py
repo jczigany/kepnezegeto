@@ -1,7 +1,7 @@
 from PySide2.QtWidgets import QWidget, QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QListWidget, QTextEdit, \
     QLabel, QFileDialog
-from PySide2.QtGui import QPainter, QPen, QBrush, QColor
-from PySide2.QtCore import Qt
+from PySide2.QtGui import QPainter, QPen, QBrush, QColor, QPixmap
+from PySide2.QtCore import Qt, QSize, QRect
 from PIL import Image, ExifTags
 import sys, os
 
@@ -113,9 +113,12 @@ class ImageViewer(QWidget):
         self.my_pen.setWidth(5)
         self.my_brush = QBrush(QColor("blue"))
 
+        self.photo = QPixmap()
+        self.photo_rect = QRect()
 
     def set_pixmap(self, image_path):
-        print(image_path)
+        self.photo.load(image_path)
+        self.repaint()
 
     def paintEvent(self, event):
         self.painter.begin(self)
@@ -127,7 +130,11 @@ class ImageViewer(QWidget):
 
         self.painter.setPen(self.my_pen)
         self.painter.setBrush(self.my_brush)
-        self.painter.drawRect(rect)
+
+        photo = self.photo.scaled(QSize(rect.width(), rect.height()), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.photo_rect.setRect(rect.x(), rect.y(), photo.width(), photo.height())
+        self.photo_rect.moveCenter(rect.center())
+        self.painter.drawPixmap(self.photo_rect, QPixmap(photo))
 
 
 app = QApplication(sys.argv)
