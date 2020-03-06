@@ -11,6 +11,7 @@ class PhotoViewer(QWidget):
         super(PhotoViewer, self).__init__()
         self.setWindowTitle("Képnézegető")
         self.resize(1000, 600)
+        self.apply_style()
 
         # objektum változók
         self.current_dir = ""
@@ -50,6 +51,11 @@ class PhotoViewer(QWidget):
         self.open_button.clicked.connect(self.open_folder_action)
         self.file_list_view.currentItemChanged.connect(self.photo_changed_action)
         self.file_list_view.itemDoubleClicked.connect(self.open_file_action)
+
+    def apply_style(self):
+        with open("style.css") as f:
+            style = f.read()
+            self.setStyleSheet(style)
 
     def getExif(self, filePath):
         exif_string = ""
