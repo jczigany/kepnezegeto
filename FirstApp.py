@@ -1,5 +1,7 @@
 from PySide2.QtWidgets import QWidget, QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QListWidget, QTextEdit, \
     QLabel, QFileDialog
+from PySide2.QtGui import QPainter, QPen, QBrush, QColor
+from PySide2.QtCore import Qt
 from PIL import Image, ExifTags
 import sys, os
 
@@ -41,7 +43,7 @@ class PhotoViewer(QWidget):
         file_list_layout.addWidget(self.photo_details)
 
         # image view
-        self.image_viewer = QLabel("Itt lesz a kép")
+        self.image_viewer = ImageViewer()
         h_layout.addWidget(self.image_viewer)
 
         # Connect signals
@@ -81,8 +83,8 @@ class PhotoViewer(QWidget):
         exif_data = self.getExif(current_photo)
         self.photo_details.setText(exif_data)
 
-        #self.image_viewer.set_pixmap(current_photo)
-        self.image_viewer.setPixmap(current_photo)
+        # self.image_viewer.set_pixmap(current_photo)
+        self.image_viewer.set_pixmap(current_photo)
 
     def refresh_file_list_view(self):
         self.file_list_view.clear()
@@ -100,6 +102,32 @@ class PhotoViewer(QWidget):
             self.open_button.setText(self.current_dir)
             self.collect_files()
             self.refresh_file_list_view()
+
+
+class ImageViewer(QWidget):
+    def __init__(self):
+        super(ImageViewer, self).__init__()
+
+        self.painter = QPainter()
+        self.my_pen = QPen(QColor("red"))
+        self.my_pen.setWidth(5)
+        self.my_brush = QBrush(QColor("blue"))
+
+
+    def set_pixmap(self, image_path):
+        print(image_path)
+
+    def paintEvent(self, event):
+        self.painter.begin(self)
+        self.draw()
+        self.painter.end()
+
+    def draw(self):
+        rect = self.rect()
+
+        self.painter.setPen(self.my_pen)
+        self.painter.setBrush(self.my_brush)
+        self.painter.drawRect(rect)
 
 
 app = QApplication(sys.argv)
